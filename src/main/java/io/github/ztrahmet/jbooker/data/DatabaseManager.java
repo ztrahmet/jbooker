@@ -2,32 +2,23 @@ package io.github.ztrahmet.jbooker.data;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * Manages all interactions with the SQLite database.
- * This class handles the database connection and initial schema setup.
- */
 public class DatabaseManager {
 
-    // The name of the database file. It will be created in the project's root directory.
     private static final String DATABASE_URL = "jdbc:sqlite:jbooker.db";
 
-    /**
-     * Initializes the database.
-     * If the database file or tables do not exist, they will be created.
-     */
     public static void initializeDatabase() {
-        // SQL statement for creating the rooms table
         String createRoomsTableSql = "CREATE TABLE IF NOT EXISTS rooms ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "room_number TEXT NOT NULL UNIQUE,"
-                + "type TEXT NOT NULL," // e.g., 'Single', 'Double', 'Suite'
+                + "type TEXT NOT NULL,"
                 + "price REAL NOT NULL"
                 + ");";
 
-        // SQL statement for creating the bookings table
         String createBookingsTableSql = "CREATE TABLE IF NOT EXISTS bookings ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                 + "room_id INTEGER NOT NULL,"
@@ -39,24 +30,59 @@ public class DatabaseManager {
 
         try (Connection conn = DriverManager.getConnection(DATABASE_URL);
              Statement stmt = conn.createStatement()) {
-            // The 'try-with-resources' statement ensures that the connection and statement are closed automatically.
             System.out.println("Connecting to database and setting up tables...");
             stmt.execute(createRoomsTableSql);
             stmt.execute(createBookingsTableSql);
-            System.out.println("Database has been initialized successfully.");
+            System.out.println("Database tables are ready.");
+            seedInitialData(conn);
         } catch (SQLException e) {
             System.err.println("Database initialization error: " + e.getMessage());
-            // Exit if we can't set up the database, as the application cannot function.
             System.exit(1);
         }
     }
 
-    /**
-     * Provides a new connection to the database.
-     *
-     * @return A Connection object to the database.
-     * @throws SQLException if a database access error occurs.
-     */
+    private static void seedInitialData(Connection conn) throws SQLException {
+        String countSql = "SELECT COUNT(*) FROM rooms";
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(countSql)) {
+            if (rs.next() && rs.getInt(1) == 0) {
+                System.out.println("No rooms found. Seeding initial room data...");
+                String insertSql = "INSERT INTO rooms(room_number, type, price) VALUES(?, ?, ?)";
+                try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
+                    pstmt.setString(1, "101");
+                    pstmt.setString(2, "Single");
+                    pstmt.setDouble(3, 85.50);
+                    pstmt.addBatch();
+
+                    pstmt.setString(1, "102");
+                    pstmt.setString(2, "Single");
+                    pstmt.setDouble(3, 85.50);
+                    pstmt.addBatch();
+
+                    pstmt.setString(1, "201");
+                    pstmt.setString(2, "Double");
+                    pstmt.setDouble(3, 120.00);
+                    pstmt.addBatch();
+
+                    pstmt.setString(1, "202");
+                    pstmt.setString(2, "Double");
+                    pstmt.setDouble(3, 125.00);
+                    pstmt.addBatch();
+
+                    pstmt.setString(1, "301");
+                    pstmt.setString(2, "Suite");
+                    pstmt.setDouble(3, 210.75);
+                    pstmt.addBatch();
+
+                    pstmt.executeBatch();
+                    System.out.println("Sample rooms have been added to the database.");
+                }
+            } else {
+                System.out.println("Database already contains room data.");
+            }
+        }
+    }
+
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DATABASE_URL);
     }
