@@ -16,13 +16,13 @@ public class CommandLineInterface {
     private final Scanner scanner;
     private final RoomRepository roomRepository;
     private final BookingService bookingService;
-    private final RoomService roomService; // The new service for room management
+    private final RoomService roomService;
 
     public CommandLineInterface() {
         this.scanner = new Scanner(System.in);
         this.roomRepository = new RoomRepository();
         this.bookingService = new BookingService();
-        this.roomService = new RoomService(); // Instantiate the new service
+        this.roomService = new RoomService();
     }
 
     /**
@@ -34,6 +34,9 @@ public class CommandLineInterface {
             printMainMenu();
             String choice = scanner.nextLine();
             switch (choice) {
+                case "0":
+                    running = false;
+                    break;
                 case "1":
                     handleViewRooms();
                     break;
@@ -44,13 +47,10 @@ public class CommandLineInterface {
                     handleViewAndCancelReservations();
                     break;
                 case "4":
-                    handleManageRooms(); // New administrative option
-                    break;
-                case "5":
-                    running = false; // Exit is now option 5
+                    handleManageRooms();
                     break;
                 default:
-                    System.out.println("\n*** Invalid option. Please select a number from 1 to 5. ***");
+                    System.out.println("\n*** Invalid option. Please select a number from 0 to 4. ***");
             }
         }
     }
@@ -59,11 +59,11 @@ public class CommandLineInterface {
         System.out.println("\n===========================");
         System.out.println("    JBooker Main Menu");
         System.out.println("===========================");
+        System.out.println("0. Exit");
         System.out.println("1. View All Rooms");
         System.out.println("2. Make a Reservation");
         System.out.println("3. View & Cancel My Reservations");
         System.out.println("4. Manage Rooms (Admin)");
-        System.out.println("5. Exit");
         System.out.print("Please enter your choice: ");
     }
 
@@ -76,6 +76,9 @@ public class CommandLineInterface {
             printRoomManagementMenu();
             String choice = scanner.nextLine();
             switch (choice) {
+                case "0":
+                    managing = false;
+                    break;
                 case "1":
                     handleAddRoom();
                     break;
@@ -85,21 +88,18 @@ public class CommandLineInterface {
                 case "3":
                     handleDeleteRoom();
                     break;
-                case "4":
-                    managing = false; // Return to main menu
-                    break;
                 default:
-                    System.out.println("\n*** Invalid option. Please select a number from 1 to 4. ***");
+                    System.out.println("\n*** Invalid option. Please select a number from 0 to 3. ***");
             }
         }
     }
 
     private void printRoomManagementMenu() {
         System.out.println("\n--- Room Management ---");
+        System.out.println("0. Back to Main Menu");
         System.out.println("1. Add a New Room");
         System.out.println("2. Update an Existing Room");
         System.out.println("3. Delete a Room");
-        System.out.println("4. Back to Main Menu");
         System.out.print("Please enter your choice: ");
     }
 
@@ -124,10 +124,12 @@ public class CommandLineInterface {
 
     private void handleUpdateRoom() {
         System.out.println("\n--- Update an Existing Room ---");
-        handleViewRooms(); // Show list of rooms to help the user choose
+        handleViewRooms();
         try {
-            System.out.print("Enter the ID of the room to update: ");
+            System.out.print("Enter the ID of the room to update (or 0 to cancel): ");
             int id = Integer.parseInt(scanner.nextLine());
+            if (id == 0) return;
+
             System.out.print("Enter new room number: ");
             String roomNumber = scanner.nextLine();
             System.out.print("Enter new room type: ");
@@ -146,12 +148,12 @@ public class CommandLineInterface {
 
     private void handleDeleteRoom() {
         System.out.println("\n--- Delete a Room ---");
-        handleViewRooms(); // Show list of rooms to help the user choose
+        handleViewRooms();
         try {
-            System.out.print("Enter the ID of the room to delete: ");
+            System.out.print("Enter the ID of the room to delete (or 0 to cancel): ");
             int id = Integer.parseInt(scanner.nextLine());
+            if (id == 0) return;
 
-            // Add a confirmation step to prevent accidental deletion
             System.out.print("Are you sure you want to permanently delete room ID " + id + "? (y/n): ");
             String confirmation = scanner.nextLine();
             if (confirmation.equalsIgnoreCase("y")) {
@@ -165,9 +167,6 @@ public class CommandLineInterface {
             System.err.println("\nError: Invalid ID. Please enter a number.");
         }
     }
-
-
-    // --- Existing User-Facing Methods (Unchanged) ---
 
     private void handleViewRooms() {
         List<Room> rooms = roomRepository.findAllRooms();
@@ -187,8 +186,10 @@ public class CommandLineInterface {
         System.out.println("\n--- Make a New Reservation ---");
         handleViewRooms();
         try {
-            System.out.print("Enter the ID of the room you want to book: ");
+            System.out.print("Enter the ID of the room you want to book (or 0 to cancel): ");
             int roomId = Integer.parseInt(scanner.nextLine());
+            if (roomId == 0) return;
+
             System.out.print("Enter your full name: ");
             String guestName = scanner.nextLine();
             System.out.print("Enter check-in date (YYYY-MM-DD): ");
@@ -237,8 +238,6 @@ public class CommandLineInterface {
             System.err.println("\nError: Invalid input. Please enter a number.");
         }
     }
-
-    // --- Helper Methods for Printing Tables (Unchanged) ---
 
     private void printRoomHeader() {
         System.out.println("-------------------------------------------------");
