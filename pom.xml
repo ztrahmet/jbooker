@@ -6,11 +6,11 @@
 
     <!-- Project Coordinates -->
     <groupId>io.github.ztrahmet.jbooker</groupId>
-    <artifactId>jbooker-cli</artifactId>
+    <artifactId>jbooker</artifactId>
     <version>1.0-SNAPSHOT</version>
 
     <!-- Project Metadata -->
-    <name>JBooker CLI</name>
+    <name>JBooker</name>
     <description>A command-line interface for a hotel reservation system.</description>
 
     <!-- Build Properties -->

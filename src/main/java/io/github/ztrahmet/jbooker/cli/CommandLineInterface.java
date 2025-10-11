@@ -44,7 +44,6 @@ public class CommandLineInterface {
                     System.out.println("\n*** Invalid option. Please select a number from 1 to 4. ***");
             }
         }
-        System.out.println("\nThank you for using JBooker. Goodbye!");
     }
 
     private void printMenu() {

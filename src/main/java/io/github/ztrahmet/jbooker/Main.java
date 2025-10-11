@@ -1,25 +1,41 @@
 package io.github.ztrahmet.jbooker;
 
 import io.github.ztrahmet.jbooker.cli.CommandLineInterface;
+// import io.github.ztrahmet.jbooker.gui.
 import io.github.ztrahmet.jbooker.data.DatabaseManager;
 
 /**
- * The main entry point for the JBooker CLI application.
- * Its primary responsibilities are to initialize the application
- * and start the user interaction loop.
+ * The main entry point for the JBooker application.
+ * This class checks command-line arguments to decide whether to start
+ * the Command Line Interface (CLI) or the Graphical User Interface (GUI).
  */
 public class Main {
 
     public static void main(String[] args) {
         System.out.println("Starting JBooker Hotel Reservation System...");
 
-        // Initialize the database. This will create the DB file and tables if they don't exist.
+        // Initialize the database. This is needed for both GUI and CLI.
         DatabaseManager.initializeDatabase();
 
-        // Create and start the command-line interface to interact with the user.
-        CommandLineInterface cli = new CommandLineInterface();
-        cli.start();
+        // Check if the "cli" argument was provided.
+        if (args.length > 0 && args[0].equalsIgnoreCase("cli")) {
+            // If "cli" argument is present, launch the command-line interface.
+            System.out.println("Mode: Command Line Interface");
+            CommandLineInterface cli = new CommandLineInterface();
+            cli.start();
+        } else {
+            // By default (no arguments), launch the graphical user interface.
+            System.out.println("Mode: Graphical User Interface");
+            /* GUI LAUNCH CODE START */
 
-        System.out.println("Thank you for using JBooker. Exiting.");
+            // The code to launch GUI will go here.
+            System.out.println("(GUI not yet implemented. Running the Command Line Interface.)");
+            CommandLineInterface cli = new CommandLineInterface();
+            cli.start();
+
+            /* GUI LAUNCH CODE END */
+        }
+
+        System.out.println("\nJBooker has finished execution. Exiting.");
     }
 }
