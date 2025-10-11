@@ -3,36 +3,40 @@ package io.github.ztrahmet.jbooker.gui;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * The main window for the JBooker GUI application.
- * It uses a JTabbedPane to organize the different functionalities of the application.
- */
 public class MainFrame extends JFrame {
 
     public MainFrame() {
         setTitle("JBooker - Hotel Reservation System");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(800, 600)); // Set a reasonable minimum size
-        setLocationRelativeTo(null); // Center the window on the screen
+        setMinimumSize(new Dimension(800, 600));
+        setLocationRelativeTo(null);
 
-        // Create the tabbed pane
         JTabbedPane tabbedPane = new JTabbedPane();
+        Notifier notifier = new Notifier();
 
-        // Add panels as tabs
-        tabbedPane.addTab("View Rooms & Book", new BookingPanel());
-        tabbedPane.addTab("Manage Reservations", new ManageBookingsPanel());
-        tabbedPane.addTab("Admin: Manage Rooms & Reservations", new AdminPanel());
+        BookingPanel bookingPanel = new BookingPanel(notifier);
+        ManageBookingsPanel manageBookingsPanel = new ManageBookingsPanel(notifier);
+        AdminPanel adminPanel = new AdminPanel(notifier);
 
-        // Add the tabbed pane to the frame
+        notifier.addListener(bookingPanel);
+        notifier.addListener(manageBookingsPanel);
+        notifier.addListener(adminPanel);
+
+        tabbedPane.addTab("View Rooms & Book", bookingPanel);
+        tabbedPane.addTab("Manage My Reservations", manageBookingsPanel);
+        tabbedPane.addTab("Administration", adminPanel);
+
+        tabbedPane.addChangeListener(e -> {
+            if (tabbedPane.getSelectedComponent() != manageBookingsPanel) {
+                manageBookingsPanel.clearBookings();
+            }
+        });
+
         add(tabbedPane, BorderLayout.CENTER);
     }
 
-    /**
-     * Sets a modern Look and Feel and makes the GUI visible.
-     */
     public void initialize() {
         try {
-            // Set a more modern Look and Feel
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
             SwingUtilities.updateComponentTreeUI(this);
         } catch (Exception e) {

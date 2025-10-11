@@ -8,10 +8,6 @@ import io.github.ztrahmet.jbooker.service.RoomService;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * Handles all administrative tasks for the command-line interface.
- * This class is a self-contained component for managing rooms and all bookings.
- */
 public class AdminConsole {
 
     private final Scanner scanner;
@@ -37,7 +33,7 @@ public class AdminConsole {
                     handleBookingAdministration();
                     break;
                 case "0":
-                    administering = false; // Return to main menu
+                    administering = false;
                     break;
                 default:
                     System.out.println("\n*** Invalid option. Please select a number from the menu. ***");
@@ -52,8 +48,6 @@ public class AdminConsole {
         System.out.println("0. Back to Main Menu");
         System.out.print("Please enter your choice: ");
     }
-
-    // --- Room Administration Methods ---
 
     private void handleRoomAdministration() {
         boolean managing = true;
@@ -71,7 +65,7 @@ public class AdminConsole {
                     handleDeleteRoom();
                     break;
                 case "0":
-                    managing = false; // Return to admin menu
+                    managing = false;
                     break;
                 default:
                     System.out.println("\n*** Invalid option. Please select a valid number. ***");
@@ -91,13 +85,13 @@ public class AdminConsole {
     private void handleAddRoom() {
         System.out.println("\n--- Add a New Room ---");
         try {
-            System.out.print("Enter new room number (e.g., 401): ");
-            String roomNumber = scanner.nextLine();
+            System.out.print("Enter room number (e.g., 101, 202A): ");
+            String number = scanner.nextLine();
             System.out.print("Enter room type (e.g., Single, Double, Suite): ");
             String type = scanner.nextLine();
             System.out.print("Enter price per night (e.g., 99.99): ");
             double price = Double.parseDouble(scanner.nextLine());
-            Room newRoom = new Room(0, roomNumber, type, price);
+            Room newRoom = new Room(number, type, price);
             String result = roomService.createRoom(newRoom);
             System.out.println("\n" + result);
         } catch (NumberFormatException e) {
@@ -107,46 +101,42 @@ public class AdminConsole {
 
     private void handleUpdateRoom() {
         System.out.println("\n--- Update an Existing Room ---");
-        viewAllRooms(); // Show list of rooms to help the user choose
+        viewAllRooms();
         try {
-            System.out.print("Enter the ID of the room to update (or 0 to cancel): ");
-            int id = Integer.parseInt(scanner.nextLine());
-            if (id == 0) return;
-            System.out.print("Enter new room number: ");
-            String roomNumber = scanner.nextLine();
+            System.out.print("Enter the Room Number to update (or 0 to cancel): ");
+            String number = scanner.nextLine();
+            if (number.equals("0")) return;
             System.out.print("Enter new room type: ");
             String type = scanner.nextLine();
             System.out.print("Enter new price per night: ");
             double price = Double.parseDouble(scanner.nextLine());
-            Room updatedRoom = new Room(id, roomNumber, type, price);
+            Room updatedRoom = new Room(number, type, price);
             String result = roomService.updateRoom(updatedRoom);
             System.out.println("\n" + result);
         } catch (NumberFormatException e) {
-            System.err.println("\nError: Invalid ID or price. Please enter valid numbers.");
+            System.err.println("\nError: Invalid price. Please enter valid numbers.");
         }
     }
 
     private void handleDeleteRoom() {
         System.out.println("\n--- Delete a Room ---");
-        viewAllRooms(); // Show list of rooms to help the user choose
+        viewAllRooms();
         try {
-            System.out.print("Enter the ID of the room to delete (or 0 to cancel): ");
-            int id = Integer.parseInt(scanner.nextLine());
-            if (id == 0) return;
-            System.out.print("Are you sure you want to permanently delete room ID " + id + "? (y/n): ");
+            System.out.print("Enter the Room Number to delete (or 0 to cancel): ");
+            String number = scanner.nextLine();
+            if (number.equals("0")) return;
+            System.out.print("Are you sure you want to permanently delete Room Number " + number + "? (y/n): ");
             String confirmation = scanner.nextLine();
             if (confirmation.equalsIgnoreCase("y")) {
-                String result = roomService.deleteRoom(id);
+                String result = roomService.deleteRoom(number);
                 System.out.println("\n" + result);
             } else {
                 System.out.println("\nDeletion cancelled.");
             }
-        } catch (NumberFormatException e) {
-            System.err.println("\nError: Invalid ID. Please enter a number.");
+        } catch (Exception e) {
+            System.err.println("\nAn unexpected error occurred.");
         }
     }
-
-    // --- Booking Administration Methods ---
 
     private void handleBookingAdministration() {
         System.out.println("\n--- Manage All Bookings ---");
@@ -163,9 +153,7 @@ public class AdminConsole {
         try {
             System.out.print("\nEnter the ID of a booking to delete (or 0 to go back): ");
             int bookingIdToDelete = Integer.parseInt(scanner.nextLine());
-            if (bookingIdToDelete == 0) {
-                return;
-            }
+            if (bookingIdToDelete == 0) return;
             System.out.print("Are you sure you want to permanently delete booking ID " + bookingIdToDelete + "? (y/n): ");
             String confirmation = scanner.nextLine();
             if (confirmation.equalsIgnoreCase("y")) {
@@ -179,8 +167,6 @@ public class AdminConsole {
         }
     }
 
-    // --- Helper Method ---
-
     private void viewAllRooms() {
         List<Room> rooms = roomService.getAllRooms();
         System.out.println("\n--- All Hotel Rooms ---");
@@ -192,6 +178,6 @@ public class AdminConsole {
         for (Room room : rooms) {
             ConsolePrinter.printRoomRow(room);
         }
-        System.out.println("-------------------------------------------------");
+        System.out.println("-------------------------------------------");
     }
 }

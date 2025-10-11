@@ -1,16 +1,12 @@
 package io.github.ztrahmet.jbooker.gui;
 
 import io.github.ztrahmet.jbooker.model.Room;
-
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * A reusable JDialog for adding a new room or editing an existing one.
- */
 public class RoomDialog extends JDialog {
 
-    private JTextField roomNumberField;
+    private JTextField numberField;
     private JTextField typeField;
     private JTextField priceField;
     private Room room;
@@ -24,9 +20,9 @@ public class RoomDialog extends JDialog {
         add(createFieldsPanel(), BorderLayout.CENTER);
         add(createButtonsPanel(), BorderLayout.SOUTH);
 
-        // Populate fields if editing
         if (roomToEdit != null) {
-            roomNumberField.setText(roomToEdit.getRoomNumber());
+            numberField.setText(roomToEdit.getNumber());
+            numberField.setEditable(false);
             typeField.setText(roomToEdit.getType());
             priceField.setText(String.valueOf(roomToEdit.getPrice()));
         }
@@ -42,15 +38,13 @@ public class RoomDialog extends JDialog {
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // Room Number
         gbc.gridx = 0;
         gbc.gridy = 0;
-        panel.add(new JLabel("Room Number:"), gbc);
+        panel.add(new JLabel("Number:"), gbc);
         gbc.gridx = 1;
-        roomNumberField = new JTextField(15);
-        panel.add(roomNumberField, gbc);
+        numberField = new JTextField(15);
+        panel.add(numberField, gbc);
 
-        // Type
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(new JLabel("Type:"), gbc);
@@ -58,7 +52,6 @@ public class RoomDialog extends JDialog {
         typeField = new JTextField(15);
         panel.add(typeField, gbc);
 
-        // Price
         gbc.gridx = 0;
         gbc.gridy = 2;
         panel.add(new JLabel("Price:"), gbc);
@@ -75,7 +68,6 @@ public class RoomDialog extends JDialog {
         saveButton.addActionListener(e -> onSave());
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(e -> onCancel());
-
         panel.add(saveButton);
         panel.add(cancelButton);
         return panel;
@@ -83,15 +75,13 @@ public class RoomDialog extends JDialog {
 
     private void onSave() {
         try {
-            room.setRoomNumber(roomNumberField.getText());
+            room.setNumber(numberField.getText());
             room.setType(typeField.getText());
             room.setPrice(Double.parseDouble(priceField.getText()));
-
-            if (room.getRoomNumber().trim().isEmpty() || room.getType().trim().isEmpty()) {
+            if (room.getNumber().trim().isEmpty() || room.getType().trim().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Room number and type cannot be empty.", "Validation Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-
             saved = true;
             dispose();
         } catch (NumberFormatException ex) {

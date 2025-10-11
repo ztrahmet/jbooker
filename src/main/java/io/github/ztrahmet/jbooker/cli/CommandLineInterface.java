@@ -10,11 +10,6 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
-/**
- * The main router for the command-line interface.
- * Its primary responsibility is to display the main menu and delegate tasks
- * to the appropriate handlers (e.g., user actions or the AdminConsole).
- */
 public class CommandLineInterface {
 
     private final Scanner scanner;
@@ -43,9 +38,7 @@ public class CommandLineInterface {
                     handleViewAndCancelReservations();
                     break;
                 case "4":
-                    // Delegate all administrative tasks to the AdminConsole.
-                    AdminConsole adminConsole = new AdminConsole(scanner, roomService, bookingService);
-                    adminConsole.start();
+                    new AdminConsole(scanner, roomService, bookingService).start();
                     break;
                 case "0":
                     running = false;
@@ -68,8 +61,6 @@ public class CommandLineInterface {
         System.out.print("Please enter your choice: ");
     }
 
-    // --- User-Facing Methods ---
-
     private void handleViewRooms() {
         List<Room> rooms = roomService.getAllRooms();
         System.out.println("\n--- All Hotel Rooms ---");
@@ -77,40 +68,32 @@ public class CommandLineInterface {
             System.out.println("No rooms found in the system.");
             return;
         }
-        // Delegate printing to the ConsolePrinter utility class.
         ConsolePrinter.printRoomHeader();
         for (Room room : rooms) {
             ConsolePrinter.printRoomRow(room);
         }
-        System.out.println("-------------------------------------------------");
+        System.out.println("-------------------------------------------");
     }
 
     private void handleMakeReservation() {
         System.out.println("\n--- Make a New Reservation ---");
-        handleViewRooms(); // Show available rooms first.
+        handleViewRooms();
         try {
-            System.out.print("Enter the ID of the room you want to book (or 0 to cancel): ");
-            int roomId = Integer.parseInt(scanner.nextLine());
-            if (roomId == 0) {
+            System.out.print("Enter the Room Number you want to book (or 0 to cancel): ");
+            String roomNumber = scanner.nextLine();
+            if (roomNumber.equals("0")) {
                 System.out.println("Reservation cancelled.");
                 return;
             }
-
             System.out.print("Enter your full name: ");
             String guestName = scanner.nextLine();
-
             System.out.print("Enter check-in date (YYYY-MM-DD): ");
             LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
-
             System.out.print("Enter check-out date (YYYY-MM-DD): ");
             LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
-
-            Booking newBooking = new Booking(0, roomId, guestName, checkInDate, checkOutDate);
+            Booking newBooking = new Booking(0, roomNumber, guestName, checkInDate, checkOutDate);
             String result = bookingService.makeReservation(newBooking);
             System.out.println("\n" + result);
-
-        } catch (NumberFormatException e) {
-            System.err.println("\nError: Invalid room ID. Please enter a number.");
         } catch (DateTimeParseException e) {
             System.err.println("\nError: Invalid date format. Please use YYYY-MM-DD.");
         }
@@ -120,28 +103,23 @@ public class CommandLineInterface {
         System.out.println("\n--- View & Cancel Reservations ---");
         System.out.print("Please enter your full name to find your bookings: ");
         String guestName = scanner.nextLine();
-
         List<Booking> bookings = bookingService.findBookingsByGuestName(guestName);
         if (bookings.isEmpty()) {
             System.out.println("\nNo bookings found for '" + guestName + "'.");
             return;
         }
-
         System.out.println("\n--- Bookings for " + guestName + " ---");
         ConsolePrinter.printBookingHeader();
         for (Booking booking : bookings) {
             ConsolePrinter.printBookingRow(booking);
         }
         System.out.println("-----------------------------------------------------------------");
-
         try {
             System.out.print("\nEnter the ID of the booking to cancel (or 0 to go back): ");
             int bookingIdToCancel = Integer.parseInt(scanner.nextLine());
             if (bookingIdToCancel == 0) {
                 return;
             }
-
-            // Verify that the user is cancelling one of their own bookings.
             boolean isValidId = bookings.stream().anyMatch(b -> b.getId() == bookingIdToCancel);
             if (isValidId) {
                 String result = bookingService.cancelBooking(bookingIdToCancel);

@@ -14,10 +14,6 @@ public class BookingService {
         this.bookingRepository = new BookingRepository();
     }
 
-    /**
-     * Retrieves all bookings from the database.
-     * @return A list of all bookings.
-     */
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
@@ -40,7 +36,7 @@ public class BookingService {
             return "Error: Check-out date must be after the check-in date.";
         }
         boolean isAvailable = !bookingRepository.hasOverlappingBooking(
-                booking.getRoomId(),
+                booking.getRoomNumber(),
                 booking.getCheckInDate(),
                 booking.getCheckOutDate()
         );

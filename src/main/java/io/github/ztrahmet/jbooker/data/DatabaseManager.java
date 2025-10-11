@@ -13,19 +13,18 @@ public class DatabaseManager {
 
     public static void initializeDatabase() {
         String createRoomsTableSql = "CREATE TABLE IF NOT EXISTS rooms ("
-                + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "room_number TEXT NOT NULL UNIQUE,"
+                + "number TEXT PRIMARY KEY,"
                 + "type TEXT NOT NULL,"
                 + "price REAL NOT NULL"
                 + ");";
 
         String createBookingsTableSql = "CREATE TABLE IF NOT EXISTS bookings ("
                 + "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + "room_id INTEGER NOT NULL,"
+                + "room_number TEXT NOT NULL,"
                 + "guest_name TEXT NOT NULL,"
                 + "check_in_date TEXT NOT NULL,"
                 + "check_out_date TEXT NOT NULL,"
-                + "FOREIGN KEY (room_id) REFERENCES rooms (id)"
+                + "FOREIGN KEY (room_number) REFERENCES rooms (number)"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(DATABASE_URL);
@@ -47,7 +46,7 @@ public class DatabaseManager {
              ResultSet rs = stmt.executeQuery(countSql)) {
             if (rs.next() && rs.getInt(1) == 0) {
                 System.out.println("No rooms found. Seeding initial room data...");
-                String insertSql = "INSERT INTO rooms(room_number, type, price) VALUES(?, ?, ?)";
+                String insertSql = "INSERT INTO rooms(number, type, price) VALUES(?, ?, ?)";
                 try (PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
                     pstmt.setString(1, "101");
                     pstmt.setString(2, "Single");
