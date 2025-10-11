@@ -10,42 +10,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Handles all database operations for the Room entity.
- */
 public class RoomRepository {
 
-    public List<Room> findAllRooms() {
-        List<Room> rooms = new ArrayList<>();
-        String sql = "SELECT id, room_number, type, price FROM rooms ORDER BY room_number";
-        try (Connection conn = DatabaseManager.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql);
-             ResultSet rs = pstmt.executeQuery()) {
-            while (rs.next()) {
-                rooms.add(mapRowToRoom(rs));
-            }
-        } catch (SQLException e) {
-            System.err.println("Error fetching rooms: " + e.getMessage());
-        }
-        return rooms;
-    }
-
-    public Optional<Room> findByRoomNumber(String roomNumber) {
-        String sql = "SELECT id, room_number, type, price FROM rooms WHERE room_number = ?";
+    /**
+     * Finds a single room by its unique ID.
+     * @param id The ID of the room to find.
+     * @return An Optional containing the Room if found, otherwise an empty Optional.
+     */
+    public Optional<Room> findById(int id) {
+        String sql = "SELECT id, room_number, type, price FROM rooms WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, roomNumber);
+            pstmt.setInt(1, id);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
-                return Optional.of(mapRowToRoom(rs));
+                Room room = new Room(
+                        rs.getInt("id"),
+                        rs.getString("room_number"),
+                        rs.getString("type"),
+                        rs.getDouble("price")
+                );
+                return Optional.of(room);
             }
         } catch (SQLException e) {
-            System.err.println("Error finding room by number: " + e.getMessage());
+            System.err.println("Error finding room by ID: " + e.getMessage());
         }
         return Optional.empty();
     }
 
-    public boolean createRoom(Room room) {
+    public boolean existsByRoomNumber(String roomNumber) {
+        String sql = "SELECT 1 FROM rooms WHERE room_number = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, roomNumber);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.err.println("Error checking room existence: " + e.getMessage());
+            return false; // Fail safely
+        }
+    }
+
+    public boolean create(Room room) {
         String sql = "INSERT INTO rooms(room_number, type, price) VALUES(?, ?, ?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -59,7 +65,7 @@ public class RoomRepository {
         }
     }
 
-    public boolean updateRoom(Room room) {
+    public boolean update(Room room) {
         String sql = "UPDATE rooms SET room_number = ?, type = ?, price = ? WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -74,11 +80,11 @@ public class RoomRepository {
         }
     }
 
-    public boolean deleteRoom(int roomId) {
+    public boolean delete(int id) {
         String sql = "DELETE FROM rooms WHERE id = ?";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, roomId);
+            pstmt.setInt(1, id);
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("Error deleting room: " + e.getMessage());
@@ -86,12 +92,24 @@ public class RoomRepository {
         }
     }
 
-    private Room mapRowToRoom(ResultSet rs) throws SQLException {
-        return new Room(
-                rs.getInt("id"),
-                rs.getString("room_number"),
-                rs.getString("type"),
-                rs.getDouble("price")
-        );
+    public List<Room> findAllRooms() {
+        List<Room> rooms = new ArrayList<>();
+        String sql = "SELECT id, room_number, type, price FROM rooms ORDER BY room_number";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            while (rs.next()) {
+                Room room = new Room(
+                        rs.getInt("id"),
+                        rs.getString("room_number"),
+                        rs.getString("type"),
+                        rs.getDouble("price")
+                );
+                rooms.add(room);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching rooms: " + e.getMessage());
+        }
+        return rooms;
     }
 }

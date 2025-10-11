@@ -3,11 +3,9 @@ package io.github.ztrahmet.jbooker.service;
 import io.github.ztrahmet.jbooker.data.RoomRepository;
 import io.github.ztrahmet.jbooker.model.Room;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 
-/**
- * Contains the business logic for managing rooms.
- */
 public class RoomService {
 
     private final RoomRepository roomRepository;
@@ -17,53 +15,45 @@ public class RoomService {
     }
 
     /**
-     * Creates a new room after validating the data.
-     *
-     * @param room The room object to create.
-     * @return A message indicating the result of the operation.
+     * Retrieves all rooms from the repository.
+     * @return A list of all rooms.
      */
+    public List<Room> getAllRooms() {
+        return roomRepository.findAllRooms();
+    }
+
+    /**
+     * Finds a single room by its ID.
+     * @param roomId The ID of the room.
+     * @return The Room object if found, otherwise null.
+     */
+    public Room findRoomById(int roomId) {
+        // .orElse(null) is used to convert the Optional<Room> to a nullable Room object,
+        // which can be simpler for some GUI components to handle.
+        return roomRepository.findById(roomId).orElse(null);
+    }
+
     public String createRoom(Room room) {
-        // Business Rule: A room number must not already exist.
-        Optional<Room> existingRoom = roomRepository.findByRoomNumber(room.getRoomNumber());
-        if (existingRoom.isPresent()) {
-            return "Error: A room with number '" + room.getRoomNumber() + "' already exists.";
+        if (room.getRoomNumber() == null || room.getRoomNumber().trim().isEmpty()) {
+            return "Error: Room number cannot be empty.";
         }
-
-        // Business Rule: Price must be positive.
-        if (room.getPrice() <= 0) {
-            return "Error: Price must be a positive number.";
+        if (roomRepository.existsByRoomNumber(room.getRoomNumber())) {
+            return "Error: A room with this number already exists.";
         }
-
-        boolean success = roomRepository.createRoom(room);
-        return success ? "Room successfully created." : "Error: Could not create the room in the database.";
+        boolean success = roomRepository.create(room);
+        return success ? "Room created successfully." : "Error: Failed to create room.";
     }
 
-    /**
-     * Updates an existing room's details.
-     *
-     * @param room The room object with updated information.
-     * @return A message indicating the result.
-     */
     public String updateRoom(Room room) {
-        // Business Rule: Ensure a different room doesn't already have the new number.
-        Optional<Room> existingRoom = roomRepository.findByRoomNumber(room.getRoomNumber());
-        if (existingRoom.isPresent() && existingRoom.get().getId() != room.getId()) {
-            return "Error: Another room with number '" + room.getRoomNumber() + "' already exists.";
+        if (room.getRoomNumber() == null || room.getRoomNumber().trim().isEmpty()) {
+            return "Error: Room number cannot be empty.";
         }
-
-        boolean success = roomRepository.updateRoom(room);
-        return success ? "Room successfully updated." : "Error: Could not update the room. Please check the ID.";
+        boolean success = roomRepository.update(room);
+        return success ? "Room updated successfully." : "Error: Failed to update room.";
     }
 
-    /**
-     * Deletes a room from the system.
-     *
-     * @param roomId The ID of the room to delete.
-     * @return A message indicating the result.
-     */
-    public String deleteRoom(int roomId) {
-        // In a more complex app, we would check if the room has future bookings before deleting.
-        boolean success = roomRepository.deleteRoom(roomId);
-        return success ? "Room successfully deleted." : "Error: Could not delete the room. It may have existing bookings or the ID is incorrect.";
+    public String deleteRoom(int id) {
+        boolean success = roomRepository.delete(id);
+        return success ? "Room deleted successfully." : "Error: Failed to delete room.";
     }
 }

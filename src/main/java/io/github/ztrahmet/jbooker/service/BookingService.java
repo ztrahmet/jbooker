@@ -14,6 +14,14 @@ public class BookingService {
         this.bookingRepository = new BookingRepository();
     }
 
+    /**
+     * Retrieves all bookings from the database.
+     * @return A list of all bookings.
+     */
+    public List<Booking> getAllBookings() {
+        return bookingRepository.findAll();
+    }
+
     public List<Booking> findBookingsByGuestName(String guestName) {
         return bookingRepository.findByGuestName(guestName);
     }

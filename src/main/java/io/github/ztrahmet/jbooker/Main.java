@@ -1,7 +1,7 @@
 package io.github.ztrahmet.jbooker;
 
 import io.github.ztrahmet.jbooker.cli.CommandLineInterface;
-// import io.github.ztrahmet.jbooker.gui.
+import io.github.ztrahmet.jbooker.gui.MainFrame;
 import io.github.ztrahmet.jbooker.data.DatabaseManager;
 
 /**
@@ -26,14 +26,8 @@ public class Main {
         } else {
             // By default (no arguments), launch the graphical user interface.
             System.out.println("Mode: Graphical User Interface");
-            /* GUI LAUNCH CODE START */
-
-            // The code to launch GUI will go here.
-            System.out.println("(GUI not yet implemented. Running the Command Line Interface.)");
-            CommandLineInterface cli = new CommandLineInterface();
-            cli.start();
-
-            /* GUI LAUNCH CODE END */
+            MainFrame frame = new MainFrame();
+            frame.initialize();
         }
 
         System.out.println("\nJBooker has finished execution. Exiting.");

@@ -12,6 +12,32 @@ import java.util.List;
 
 public class BookingRepository {
 
+    /**
+     * Finds all bookings in the database, ordered by the most recent check-in date.
+     * @return A list of all bookings.
+     */
+    public List<Booking> findAll() {
+        List<Booking> bookings = new ArrayList<>();
+        String sql = "SELECT id, room_id, guest_name, check_in_date, check_out_date FROM bookings ORDER BY check_in_date DESC";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Booking booking = new Booking(
+                        rs.getInt("id"),
+                        rs.getInt("room_id"),
+                        rs.getString("guest_name"),
+                        LocalDate.parse(rs.getString("check_in_date")),
+                        LocalDate.parse(rs.getString("check_out_date"))
+                );
+                bookings.add(booking);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching all bookings: " + e.getMessage());
+        }
+        return bookings;
+    }
+
     public List<Booking> findByGuestName(String guestName) {
         List<Booking> bookings = new ArrayList<>();
         String sql = "SELECT id, room_id, guest_name, check_in_date, check_out_date FROM bookings WHERE UPPER(guest_name) = UPPER(?)";
