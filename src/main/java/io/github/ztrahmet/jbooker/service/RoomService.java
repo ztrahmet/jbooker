@@ -22,18 +22,50 @@ public class RoomService {
         return roomRepository.findByNumber(roomNumber);
     }
 
-    public String createRoom(Room room) {
+    public ServiceResult createRoom(String number, String type, String priceStr) {
+        if (number == null || number.trim().isEmpty() || type == null || type.trim().isEmpty()) {
+            return ServiceResult.failure("Room number and type cannot be empty.");
+        }
+        try {
+            double price = Double.parseDouble(priceStr);
+            Room room = new Room(number, type, price);
+            return createRoom(room);
+        } catch (NumberFormatException e) {
+            return ServiceResult.failure("Invalid price format. Please enter a valid number.");
+        }
+    }
+
+    public ServiceResult createRoom(Room room) {
+        if (roomRepository.findByNumber(room.getNumber()).isPresent()) {
+            return ServiceResult.failure("Error: Room with number " + room.getNumber() + " already exists.");
+        }
         boolean success = roomRepository.create(room);
-        return success ? "Room created successfully." : "Error: Failed to create room.";
+        return success ? ServiceResult.success("Room created successfully.") : ServiceResult.failure("Error: Failed to create room.");
     }
 
-    public String updateRoom(Room room) {
+    public ServiceResult updateRoom(String number, String type, String priceStr) {
+        if (type == null || type.trim().isEmpty()) {
+            return ServiceResult.failure("Room type cannot be empty.");
+        }
+        try {
+            double price = Double.parseDouble(priceStr);
+            Room room = new Room(number, type, price);
+            return updateRoom(room);
+        } catch (NumberFormatException e) {
+            return ServiceResult.failure("Invalid price format. Please enter a valid number.");
+        }
+    }
+
+    public ServiceResult updateRoom(Room room) {
         boolean success = roomRepository.update(room);
-        return success ? "Room updated successfully." : "Error: Failed to update room.";
+        return success ? ServiceResult.success("Room updated successfully.") : ServiceResult.failure("Error: Failed to update room.");
     }
 
-    public String deleteRoom(String number) {
+    public ServiceResult deleteRoom(String number) {
+        if (number == null || number.trim().isEmpty()) {
+            return ServiceResult.failure("Room number cannot be empty.");
+        }
         boolean success = roomRepository.delete(number);
-        return success ? "Room deleted successfully." : "Error: Failed to delete room.";
+        return success ? ServiceResult.success("Room deleted successfully.") : ServiceResult.failure("Error: Failed to delete room.");
     }
 }

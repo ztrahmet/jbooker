@@ -4,6 +4,7 @@ import io.github.ztrahmet.jbooker.model.Booking;
 import io.github.ztrahmet.jbooker.model.Room;
 import io.github.ztrahmet.jbooker.service.BookingService;
 import io.github.ztrahmet.jbooker.service.RoomService;
+import io.github.ztrahmet.jbooker.service.ServiceResult;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -16,6 +17,8 @@ public class AdminPanel extends JPanel implements PanelListener {
     private final Notifier notifier;
     private DefaultTableModel bookingTableModel;
     private Runnable loadBookingData;
+    private final RoomService roomService = new RoomService();
+    private final BookingService bookingService = new BookingService();
 
     public AdminPanel(Notifier notifier) {
         this.notifier = notifier;
@@ -29,7 +32,6 @@ public class AdminPanel extends JPanel implements PanelListener {
     private JPanel createRoomManagementPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        RoomService roomService = new RoomService();
         DefaultTableModel roomTableModel = new DefaultTableModel(new String[]{"Room Number", "Type", "Price/Night"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
@@ -50,14 +52,15 @@ public class AdminPanel extends JPanel implements PanelListener {
             RoomDialog dialog = new RoomDialog((Frame) SwingUtilities.getWindowAncestor(this), "Add New Room", null);
             dialog.setVisible(true);
             if (dialog.isSaved()) {
-                String result = roomService.createRoom(dialog.getRoom());
-                JOptionPane.showMessageDialog(panel, result);
-                if (result.startsWith("Room created successfully")) {
+                ServiceResult result = roomService.createRoom(dialog.getNumberText(), dialog.getTypeText(), dialog.getPriceText());
+                JOptionPane.showMessageDialog(panel, result.getMessage(), "Status", result.isSuccess() ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+                if (result.isSuccess()) {
                     notifier.notifyListeners();
                 }
                 loadRoomData.run();
             }
         });
+
         JButton updateButton = new JButton("Update Selected");
         updateButton.addActionListener(e -> {
             int selectedRow = roomTable.getSelectedRow();
@@ -72,9 +75,9 @@ public class AdminPanel extends JPanel implements PanelListener {
                 RoomDialog dialog = new RoomDialog((Frame) SwingUtilities.getWindowAncestor(this), "Edit Room " + roomNumber, roomToEdit);
                 dialog.setVisible(true);
                 if (dialog.isSaved()) {
-                    String result = roomService.updateRoom(dialog.getRoom());
-                    JOptionPane.showMessageDialog(panel, result);
-                    if (result.startsWith("Room updated successfully")) {
+                    ServiceResult result = roomService.updateRoom(roomNumber, dialog.getTypeText(), dialog.getPriceText());
+                    JOptionPane.showMessageDialog(panel, result.getMessage(), "Status", result.isSuccess() ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+                    if (result.isSuccess()) {
                         notifier.notifyListeners();
                     }
                     loadRoomData.run();
@@ -83,6 +86,7 @@ public class AdminPanel extends JPanel implements PanelListener {
                 JOptionPane.showMessageDialog(panel, "Error: Could not find the selected room.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
         JButton deleteButton = new JButton("Delete Selected");
         deleteButton.addActionListener(e -> {
             int selectedRow = roomTable.getSelectedRow();
@@ -93,9 +97,9 @@ public class AdminPanel extends JPanel implements PanelListener {
             String roomNumber = (String) roomTable.getValueAt(selectedRow, 0);
             int confirm = JOptionPane.showConfirmDialog(panel, "Delete room " + roomNumber + "?", "Confirm", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                String result = roomService.deleteRoom(roomNumber);
-                JOptionPane.showMessageDialog(panel, result);
-                if (result.startsWith("Room deleted successfully")) {
+                ServiceResult result = roomService.deleteRoom(roomNumber);
+                JOptionPane.showMessageDialog(panel, result.getMessage());
+                if (result.isSuccess()) {
                     notifier.notifyListeners();
                 }
                 loadRoomData.run();
@@ -115,7 +119,6 @@ public class AdminPanel extends JPanel implements PanelListener {
     private JPanel createBookingManagementPanel() {
         JPanel panel = new JPanel(new BorderLayout(10, 10));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        BookingService bookingService = new BookingService();
         bookingTableModel = new DefaultTableModel(new String[]{"ID", "Room Number", "Guest", "Check-in", "Check-out"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
@@ -146,8 +149,11 @@ public class AdminPanel extends JPanel implements PanelListener {
             int bookingId = (int) bookingTableModel.getValueAt(selectedRow, 0);
             int confirm = JOptionPane.showConfirmDialog(panel, "Delete reservation " + bookingId + "?", "Confirm", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                String result = bookingService.cancelBooking(bookingId);
-                JOptionPane.showMessageDialog(panel, result);
+                ServiceResult result = bookingService.cancelBooking(bookingId);
+                JOptionPane.showMessageDialog(panel, result.getMessage());
+                if (result.isSuccess()) {
+                    notifier.notifyListeners();
+                }
                 loadBookingData.run();
             }
         });

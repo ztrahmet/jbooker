@@ -2,6 +2,7 @@ package io.github.ztrahmet.jbooker.gui;
 
 import io.github.ztrahmet.jbooker.model.Booking;
 import io.github.ztrahmet.jbooker.service.BookingService;
+import io.github.ztrahmet.jbooker.service.ServiceResult;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -31,14 +32,19 @@ public class ManageBookingsPanel extends JPanel implements PanelListener {
         searchField = new JTextField(30);
         JButton searchButton = new JButton("Find Reservations");
         searchButton.addActionListener(e -> findBookings());
-        searchPanel.add(new JLabel("Enter Your Full Name:"));
+        searchPanel.add(new JLabel("Enter Full Name:"));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         add(searchPanel, BorderLayout.NORTH);
     }
 
     private void setupTable() {
-        tableModel = new DefaultTableModel(new String[]{"Booking ID", "Room Number", "Guest Name", "Check-in", "Check-out"}, 0);
+        tableModel = new DefaultTableModel(new String[]{"Booking ID", "Room Number", "Guest Name", "Check-in", "Check-out"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         bookingTable = new JTable(tableModel);
         bookingTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JPanel tablePanel = new JPanel(new BorderLayout());
@@ -84,9 +90,9 @@ public class ManageBookingsPanel extends JPanel implements PanelListener {
                 "Confirm Cancellation",
                 JOptionPane.YES_NO_OPTION);
         if (confirmation == JOptionPane.YES_OPTION) {
-            String result = bookingService.cancelBooking(bookingId);
-            JOptionPane.showMessageDialog(this, result, "Cancellation Status", JOptionPane.INFORMATION_MESSAGE);
-            if (result.startsWith("Booking successfully cancelled")) {
+            ServiceResult result = bookingService.cancelBooking(bookingId);
+            JOptionPane.showMessageDialog(this, result.getMessage(), "Cancellation Status", JOptionPane.INFORMATION_MESSAGE);
+            if (result.isSuccess()) {
                 notifier.notifyListeners();
             }
             findBookings();

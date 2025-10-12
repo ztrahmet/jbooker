@@ -1,15 +1,13 @@
 package io.github.ztrahmet.jbooker.gui;
 
-import io.github.ztrahmet.jbooker.model.Booking;
 import io.github.ztrahmet.jbooker.model.Room;
 import io.github.ztrahmet.jbooker.service.BookingService;
 import io.github.ztrahmet.jbooker.service.RoomService;
+import io.github.ztrahmet.jbooker.service.ServiceResult;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Vector;
 
@@ -120,31 +118,20 @@ public class BookingPanel extends JPanel implements PanelListener {
     }
 
     private void makeReservation() {
-        try {
-            String roomNumber = (String) roomNumberSpinner.getValue();
-            String guestName = guestNameField.getText();
-            LocalDate checkIn = LocalDate.parse(checkInDateField.getText());
-            LocalDate checkOut = LocalDate.parse(checkOutDateField.getText());
+        String roomNumber = (String) roomNumberSpinner.getValue();
+        String guestName = guestNameField.getText();
+        String checkIn = checkInDateField.getText();
+        String checkOut = checkOutDateField.getText();
 
-            if (guestName.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Guest name cannot be empty.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        ServiceResult result = bookingService.makeReservation(roomNumber, guestName, checkIn, checkOut);
+        JOptionPane.showMessageDialog(this, result.getMessage(), "Booking Status",
+                result.isSuccess() ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
 
-            Booking booking = new Booking(0, roomNumber, guestName, checkIn, checkOut);
-            String result = bookingService.makeReservation(booking);
-            JOptionPane.showMessageDialog(this, result, "Booking Status", JOptionPane.INFORMATION_MESSAGE);
-
-            if (result.startsWith("Reservation successful")) {
-                guestNameField.setText("");
-                checkInDateField.setText("");
-                checkOutDateField.setText("");
-                notifier.notifyListeners();
-            }
-        } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Invalid date format. Please use YYYY-MM-DD.", "Input Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An unexpected error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        if (result.isSuccess()) {
+            guestNameField.setText("");
+            checkInDateField.setText("");
+            checkOutDateField.setText("");
+            notifier.notifyListeners();
         }
     }
 

@@ -23,7 +23,7 @@ public class MainFrame extends JFrame {
         notifier.addListener(adminPanel);
 
         tabbedPane.addTab("View Rooms & Book", bookingPanel);
-        tabbedPane.addTab("Manage My Reservations", manageBookingsPanel);
+        tabbedPane.addTab("Manage Reservations", manageBookingsPanel);
         tabbedPane.addTab("Administration", adminPanel);
 
         tabbedPane.addChangeListener(e -> {

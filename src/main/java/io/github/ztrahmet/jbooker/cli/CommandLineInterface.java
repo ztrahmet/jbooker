@@ -4,9 +4,8 @@ import io.github.ztrahmet.jbooker.model.Booking;
 import io.github.ztrahmet.jbooker.model.Room;
 import io.github.ztrahmet.jbooker.service.BookingService;
 import io.github.ztrahmet.jbooker.service.RoomService;
+import io.github.ztrahmet.jbooker.service.ServiceResult;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -78,25 +77,21 @@ public class CommandLineInterface {
     private void handleMakeReservation() {
         System.out.println("\n--- Make a New Reservation ---");
         handleViewRooms();
-        try {
-            System.out.print("Enter the Room Number you want to book (or 0 to cancel): ");
-            String roomNumber = scanner.nextLine();
-            if (roomNumber.equals("0")) {
-                System.out.println("Reservation cancelled.");
-                return;
-            }
-            System.out.print("Enter your full name: ");
-            String guestName = scanner.nextLine();
-            System.out.print("Enter check-in date (YYYY-MM-DD): ");
-            LocalDate checkInDate = LocalDate.parse(scanner.nextLine());
-            System.out.print("Enter check-out date (YYYY-MM-DD): ");
-            LocalDate checkOutDate = LocalDate.parse(scanner.nextLine());
-            Booking newBooking = new Booking(0, roomNumber, guestName, checkInDate, checkOutDate);
-            String result = bookingService.makeReservation(newBooking);
-            System.out.println("\n" + result);
-        } catch (DateTimeParseException e) {
-            System.err.println("\nError: Invalid date format. Please use YYYY-MM-DD.");
+        System.out.print("Enter the Room Number you want to book (or 0 to cancel): ");
+        String roomNumber = scanner.nextLine();
+        if (roomNumber.equals("0")) {
+            System.out.println("Reservation cancelled.");
+            return;
         }
+        System.out.print("Enter your full name: ");
+        String guestName = scanner.nextLine();
+        System.out.print("Enter check-in date (YYYY-MM-DD): ");
+        String checkInDate = scanner.nextLine();
+        System.out.print("Enter check-out date (YYYY-MM-DD): ");
+        String checkOutDate = scanner.nextLine();
+
+        ServiceResult result = bookingService.makeReservation(roomNumber, guestName, checkInDate, checkOutDate);
+        System.out.println("\n" + result.getMessage());
     }
 
     private void handleViewAndCancelReservations() {
@@ -122,8 +117,8 @@ public class CommandLineInterface {
             }
             boolean isValidId = bookings.stream().anyMatch(b -> b.getId() == bookingIdToCancel);
             if (isValidId) {
-                String result = bookingService.cancelBooking(bookingIdToCancel);
-                System.out.println("\n" + result);
+                ServiceResult result = bookingService.cancelBooking(bookingIdToCancel);
+                System.out.println("\n" + result.getMessage());
             } else {
                 System.out.println("\nError: Invalid ID. The ID you entered does not match any of your bookings.");
             }

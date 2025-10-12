@@ -1,22 +1,29 @@
 package io.github.ztrahmet.jbooker.gui;
 
 import io.github.ztrahmet.jbooker.model.Room;
+import lombok.Getter;
+
 import javax.swing.*;
 import java.awt.*;
 
+@Getter
 public class RoomDialog extends JDialog {
 
-    private JTextField numberField;
-    private JTextField typeField;
-    private JTextField priceField;
-    private Room room;
+    private final JTextField numberField;
+    private final JTextField typeField;
+    private final JTextField priceField;
     private boolean saved = false;
 
     public RoomDialog(Frame owner, String title, Room roomToEdit) {
         super(owner, title, true);
-        this.room = (roomToEdit == null) ? new Room() : roomToEdit;
 
         setLayout(new BorderLayout(10, 10));
+
+        // Initialize fields
+        numberField = new JTextField(15);
+        typeField = new JTextField(15);
+        priceField = new JTextField(15);
+
         add(createFieldsPanel(), BorderLayout.CENTER);
         add(createButtonsPanel(), BorderLayout.SOUTH);
 
@@ -42,21 +49,18 @@ public class RoomDialog extends JDialog {
         gbc.gridy = 0;
         panel.add(new JLabel("Number:"), gbc);
         gbc.gridx = 1;
-        numberField = new JTextField(15);
         panel.add(numberField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
         panel.add(new JLabel("Type:"), gbc);
         gbc.gridx = 1;
-        typeField = new JTextField(15);
         panel.add(typeField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
         panel.add(new JLabel("Price:"), gbc);
         gbc.gridx = 1;
-        priceField = new JTextField(15);
         panel.add(priceField, gbc);
 
         return panel;
@@ -74,19 +78,13 @@ public class RoomDialog extends JDialog {
     }
 
     private void onSave() {
-        try {
-            room.setNumber(numberField.getText());
-            room.setType(typeField.getText());
-            room.setPrice(Double.parseDouble(priceField.getText()));
-            if (room.getNumber().trim().isEmpty() || room.getType().trim().isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Room number and type cannot be empty.", "Validation Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            saved = true;
-            dispose();
-        } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid price format. Please enter a valid number.", "Input Error", JOptionPane.ERROR_MESSAGE);
+        // Basic check for empty fields in the dialog itself.
+        if (getNumberText().trim().isEmpty() || getTypeText().trim().isEmpty() || getPriceText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields must be filled.", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        saved = true;
+        dispose();
     }
 
     private void onCancel() {
@@ -94,11 +92,16 @@ public class RoomDialog extends JDialog {
         dispose();
     }
 
-    public Room getRoom() {
-        return room;
+    // Getters for raw text values
+    public String getNumberText() {
+        return numberField.getText();
     }
 
-    public boolean isSaved() {
-        return saved;
+    public String getTypeText() {
+        return typeField.getText();
+    }
+
+    public String getPriceText() {
+        return priceField.getText();
     }
 }

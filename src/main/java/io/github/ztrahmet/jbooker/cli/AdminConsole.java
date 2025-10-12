@@ -4,6 +4,7 @@ import io.github.ztrahmet.jbooker.model.Booking;
 import io.github.ztrahmet.jbooker.model.Room;
 import io.github.ztrahmet.jbooker.service.BookingService;
 import io.github.ztrahmet.jbooker.service.RoomService;
+import io.github.ztrahmet.jbooker.service.ServiceResult;
 
 import java.util.List;
 import java.util.Scanner;
@@ -84,57 +85,43 @@ public class AdminConsole {
 
     private void handleAddRoom() {
         System.out.println("\n--- Add a New Room ---");
-        try {
-            System.out.print("Enter room number (e.g., 101, 202A): ");
-            String number = scanner.nextLine();
-            System.out.print("Enter room type (e.g., Single, Double, Suite): ");
-            String type = scanner.nextLine();
-            System.out.print("Enter price per night (e.g., 99.99): ");
-            double price = Double.parseDouble(scanner.nextLine());
-            Room newRoom = new Room(number, type, price);
-            String result = roomService.createRoom(newRoom);
-            System.out.println("\n" + result);
-        } catch (NumberFormatException e) {
-            System.err.println("\nError: Invalid price. Please enter a valid number.");
-        }
+        System.out.print("Enter room number (e.g., 101, 202A): ");
+        String number = scanner.nextLine();
+        System.out.print("Enter room type (e.g., Single, Double, Suite): ");
+        String type = scanner.nextLine();
+        System.out.print("Enter price per night (e.g., 99.99): ");
+        String price = scanner.nextLine();
+        ServiceResult result = roomService.createRoom(number, type, price);
+        System.out.println("\n" + result.getMessage());
     }
 
     private void handleUpdateRoom() {
         System.out.println("\n--- Update an Existing Room ---");
         viewAllRooms();
-        try {
-            System.out.print("Enter the Room Number to update (or 0 to cancel): ");
-            String number = scanner.nextLine();
-            if (number.equals("0")) return;
-            System.out.print("Enter new room type: ");
-            String type = scanner.nextLine();
-            System.out.print("Enter new price per night: ");
-            double price = Double.parseDouble(scanner.nextLine());
-            Room updatedRoom = new Room(number, type, price);
-            String result = roomService.updateRoom(updatedRoom);
-            System.out.println("\n" + result);
-        } catch (NumberFormatException e) {
-            System.err.println("\nError: Invalid price. Please enter valid numbers.");
-        }
+        System.out.print("Enter the Room Number to update (or 0 to cancel): ");
+        String number = scanner.nextLine();
+        if (number.equals("0")) return;
+        System.out.print("Enter new room type: ");
+        String type = scanner.nextLine();
+        System.out.print("Enter new price per night: ");
+        String price = scanner.nextLine();
+        ServiceResult result = roomService.updateRoom(number, type, price);
+        System.out.println("\n" + result.getMessage());
     }
 
     private void handleDeleteRoom() {
         System.out.println("\n--- Delete a Room ---");
         viewAllRooms();
-        try {
-            System.out.print("Enter the Room Number to delete (or 0 to cancel): ");
-            String number = scanner.nextLine();
-            if (number.equals("0")) return;
-            System.out.print("Are you sure you want to permanently delete Room Number " + number + "? (y/n): ");
-            String confirmation = scanner.nextLine();
-            if (confirmation.equalsIgnoreCase("y")) {
-                String result = roomService.deleteRoom(number);
-                System.out.println("\n" + result);
-            } else {
-                System.out.println("\nDeletion cancelled.");
-            }
-        } catch (Exception e) {
-            System.err.println("\nAn unexpected error occurred.");
+        System.out.print("Enter the Room Number to delete (or 0 to cancel): ");
+        String number = scanner.nextLine();
+        if (number.equals("0")) return;
+        System.out.print("Are you sure you want to permanently delete Room Number " + number + "? (y/n): ");
+        String confirmation = scanner.nextLine();
+        if (confirmation.equalsIgnoreCase("y")) {
+            ServiceResult result = roomService.deleteRoom(number);
+            System.out.println("\n" + result.getMessage());
+        } else {
+            System.out.println("\nDeletion cancelled.");
         }
     }
 
@@ -150,20 +137,16 @@ public class AdminConsole {
             ConsolePrinter.printBookingRow(booking);
         }
         System.out.println("-----------------------------------------------------------------");
-        try {
-            System.out.print("\nEnter the ID of a booking to delete (or 0 to go back): ");
-            int bookingIdToDelete = Integer.parseInt(scanner.nextLine());
-            if (bookingIdToDelete == 0) return;
-            System.out.print("Are you sure you want to permanently delete booking ID " + bookingIdToDelete + "? (y/n): ");
-            String confirmation = scanner.nextLine();
-            if (confirmation.equalsIgnoreCase("y")) {
-                String result = bookingService.cancelBooking(bookingIdToDelete);
-                System.out.println("\n" + result);
-            } else {
-                System.out.println("\nDeletion cancelled.");
-            }
-        } catch (NumberFormatException e) {
-            System.err.println("\nError: Invalid ID. Please enter a number.");
+        System.out.print("\nEnter the ID of a booking to delete (or 0 to go back): ");
+        String bookingIdToDelete = scanner.nextLine();
+        if (bookingIdToDelete.equals("0")) return;
+        System.out.print("Are you sure you want to permanently delete booking ID " + bookingIdToDelete + "? (y/n): ");
+        String confirmation = scanner.nextLine();
+        if (confirmation.equalsIgnoreCase("y")) {
+            ServiceResult result = bookingService.cancelBooking(bookingIdToDelete);
+            System.out.println("\n" + result.getMessage());
+        } else {
+            System.out.println("\nDeletion cancelled.");
         }
     }
 
