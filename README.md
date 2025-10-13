@@ -1,13 +1,22 @@
 # 🏨 JBooker: Hotel Reservation System (CLI & GUI)
 
-JBooker is a complete, command-line and graphical-based hotel reservation system written in Java. This project is
-designed to showcase a strong understanding of Object-Oriented Programming (OOP) principles, multi-layered application
-architecture, and modern Java development practices.
+![Java](https://img.shields.io/badge/Java-ED8B00?logo=openjdk&logoColor=white)
+![Maven](https://img.shields.io/badge/Maven-C71A36?logo=apachemaven&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
+![Swing](https://img.shields.io/badge/Java%20Swing-5382A1?logo=java&logoColor=white)
+![JUnit](https://img.shields.io/badge/JUnit-25A162?logo=junit5&logoColor=white)
+![Lombok](https://img.shields.io/badge/Lombok-BC0000?logo=lombok)
+
+JBooker is a complete, command-line and graphical-based hotel reservation system written in Java. This project is designed to showcase a strong understanding of Object-Oriented Programming (OOP) principles,
+multi-layered application architecture, and modern Java development practices.
 
 ---
 
 <p align="center">
-  <b>Enjoying the project? Please consider giving it a ⭐ on GitHub!</b>
+  <b>
+  Enjoying the project? Please consider giving it a ⭐ on
+  <a href="https://github.com/ztrahmet/jbooker" target="_blank" rel="noopener noreferrer">GitHub!</a>
+  </b>
 </p>
 
 ---
@@ -17,7 +26,7 @@ architecture, and modern Java development practices.
 Here is a showcase of the application's user interface.
 
 | Menu                  | Screenshots                                                                                    |
-|:----------------------|:-----------------------------------------------------------------------------------------------|
+| :-------------------- | :--------------------------------------------------------------------------------------------- |
 | Reservation (Success) | ![Reservation Success](assets/screenshots/screenshot-reservation-success.png)                  |
 | Reservation (Fail)    | ![Reservation Not Available](assets/screenshots/screenshot-reservation-fail-not_available.png) |
 | Manage Reservations   | ![Manage Reservations](assets/screenshots/screenshot-manage_reservations.png)                  |
@@ -33,14 +42,14 @@ Command-Line Interface (CLI) and a Graphical User Interface (GUI).
 
 ### User Features
 
-* **View Available Rooms:** Display a clean, formatted list of all rooms, including their type and price per night.
-* **Make a Reservation:** Book a room for a specific date range, with validation to prevent double-booking.
-* **View & Cancel Bookings:** Search for existing bookings by guest name and cancel them.
+- **View Available Rooms:** Display a clean, formatted list of all rooms, including their type and price per night.
+- **Make a Reservation:** Book a room for a specific date range, with validation to prevent double-booking.
+- **View & Cancel Bookings:** Search for existing bookings by guest name and cancel them.
 
 ### Administrative Features
 
-* **Room Management:** A dedicated admin menu to perform CRUD (Create, Read, Update, Delete) operations on rooms.
-* **Dynamic Data:** Add, update, or remove rooms from the hotel's inventory in real-time.
+- **Room Management:** A dedicated admin menu to perform CRUD (Create, Read, Update, Delete) operations on rooms.
+- **Dynamic Data:** Add, update, or remove rooms from the hotel's inventory in real-time.
 
 ---
 
@@ -49,12 +58,12 @@ Command-Line Interface (CLI) and a Graphical User Interface (GUI).
 This project was built using industry-standard tools and a professional architectural pattern to ensure the code is
 maintainable, scalable, and testable.
 
-* **Language:** `Java`
-* **Build Tool:** `Maven`
-* **Database:** `SQLite`
-* **GUI:** `Java Swing`
-* **Testing:** `JUnit`
-* **Utilities:** `Lombok`
+- **Language:** `Java`
+- **Build Tool:** `Maven`
+- **Database:** `SQLite`
+- **GUI:** `Java Swing`
+- **Testing:** `JUnit`
+- **Utilities:** `Lombok`
 
 ### Application Architecture
 
@@ -91,8 +100,8 @@ The application uses an SQLite database file (`jbooker.db`) which is created aut
 **Table: `rooms`**
 Stores the details for each hotel room.
 
-| Column | Type   | Constraints     | Description             |
-| :----- | :----- | :-------------- | :---------------------- |
+| Column   | Type   | Constraints     | Description             |
+| :------- | :----- | :-------------- | :---------------------- |
 | `number` | `TEXT` | **PRIMARY KEY** | The unique room number. |
 | `type`   | `TEXT` | `NOT NULL`      | The type of the room.   |
 | `price`  | `REAL` | `NOT NULL`      | The price per night.    |
@@ -130,8 +139,8 @@ src/main/java/io/github/ztrahmet/jbooker/
 
 ### Prerequisites
 
-* Java JDK 17 or higher
-* Apache Maven
+- Java JDK 17 or higher
+- Apache Maven
 
 ### How to Build
 
@@ -153,13 +162,13 @@ src/main/java/io/github/ztrahmet/jbooker/
 
 The application can be launched in two different modes from the command line.
 
-* **To run the GUI (default mode):**
-    ```bash
-    java -jar target/jbooker-1.0-SNAPSHOT.jar
-    ```
-* **To run the CLI:**
-    ```bash
-    java -jar target/jbooker-1.0-SNAPSHOT.jar cli
-    ```
+- **To run the GUI (default mode):**
+  ```bash
+  java -jar target/jbooker-1.0-SNAPSHOT.jar
+  ```
+- **To run the CLI:**
+  ```bash
+  java -jar target/jbooker-1.0-SNAPSHOT.jar cli
+  ```
 
 The `jbooker.db` database file will be created automatically in the root directory on the first run.
