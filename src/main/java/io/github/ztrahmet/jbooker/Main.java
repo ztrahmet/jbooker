@@ -1,5 +1,6 @@
 package io.github.ztrahmet.jbooker;
 
+import com.formdev.flatlaf.FlatLightLaf; // <-- Import FlatLaf
 import io.github.ztrahmet.jbooker.cli.CommandLineInterface;
 import io.github.ztrahmet.jbooker.gui.MainFrame;
 import io.github.ztrahmet.jbooker.data.DatabaseManager;
@@ -24,6 +25,14 @@ public class Main {
             CommandLineInterface cli = new CommandLineInterface();
             cli.start();
         } else {
+            // Set the modern Look and Feel *before* creating any UI components
+            try {
+                FlatLightLaf.setup(); // This sets up the default light theme
+                // For a dark theme, use: com.formdev.flatlaf.FlatDarkLaf.setup();
+            } catch (Exception ex) {
+                System.err.println("Failed to initialize modern LaF. Using default.");
+            }
+
             // By default (no arguments), launch the graphical user interface.
             System.out.println("Mode: Graphical User Interface");
             MainFrame frame = new MainFrame();

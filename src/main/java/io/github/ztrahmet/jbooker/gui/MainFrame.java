@@ -36,12 +36,6 @@ public class MainFrame extends JFrame {
     }
 
     public void initialize() {
-        try {
-            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-            SwingUtilities.updateComponentTreeUI(this);
-        } catch (Exception e) {
-            System.err.println("Nimbus Look and Feel not found. Using default.");
-        }
         setVisible(true);
     }
 }

@@ -4,6 +4,7 @@ import io.github.ztrahmet.jbooker.model.Room;
 import io.github.ztrahmet.jbooker.service.BookingService;
 import io.github.ztrahmet.jbooker.service.RoomService;
 import io.github.ztrahmet.jbooker.service.ServiceResult;
+import com.formdev.flatlaf.FlatClientProperties;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -71,20 +72,23 @@ public class BookingPanel extends JPanel implements PanelListener {
         formPanel.add(new JLabel("Full Name:"), gbc);
         gbc.gridx = 1;
         guestNameField = new JTextField(20);
+        guestNameField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Enter full name");
         formPanel.add(guestNameField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 2;
-        formPanel.add(new JLabel("Check-in (YYYY-MM-DD):"), gbc);
+        formPanel.add(new JLabel("Check-in:"), gbc);
         gbc.gridx = 1;
         checkInDateField = new JTextField(20);
+        checkInDateField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "YYYY-MM-DD");
         formPanel.add(checkInDateField, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 3;
-        formPanel.add(new JLabel("Check-out (YYYY-MM-DD):"), gbc);
+        formPanel.add(new JLabel("Check-out:"), gbc);
         gbc.gridx = 1;
         checkOutDateField = new JTextField(20);
+        checkOutDateField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "YYYY-MM-DD");
         formPanel.add(checkOutDateField, gbc);
 
         gbc.gridx = 0;

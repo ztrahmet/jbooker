@@ -3,6 +3,7 @@ package io.github.ztrahmet.jbooker.gui;
 import io.github.ztrahmet.jbooker.model.Booking;
 import io.github.ztrahmet.jbooker.service.BookingService;
 import io.github.ztrahmet.jbooker.service.ServiceResult;
+import com.formdev.flatlaf.FlatClientProperties;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -30,6 +31,7 @@ public class ManageBookingsPanel extends JPanel implements PanelListener {
     private void setupSearchPanel() {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         searchField = new JTextField(30);
+        searchField.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Enter guest's full name to search");
         JButton searchButton = new JButton("Find Reservations");
         searchButton.addActionListener(e -> findBookings());
         searchPanel.add(new JLabel("Enter Full Name:"));

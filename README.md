@@ -25,6 +25,10 @@ multi-layered application architecture, and modern Java development practices.
 
 Here is a showcase of the application's user interface.
 
+**Updated UI:**
+
+![Latest UI](assets/screenshots/screenshot.png)
+
 | Menu                  | Screenshots                                                                                    |
 | :-------------------- | :--------------------------------------------------------------------------------------------- |
 | Reservation (Success) | ![Reservation Success](assets/screenshots/screenshot-reservation-success.png)                  |
